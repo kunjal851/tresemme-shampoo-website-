@@ -35,7 +35,9 @@ function LuxeHair() {
 
   const [toast, setToast] = useState("");
   const [show, setShow] = useState(false);
-  const [cartItems, setCartItems] = useState<{ id: string; name: string; price: number; img: string; qty: number }[]>([]);
+  const [cartItems, setCartItems] = useState<
+    { id: string; name: string; price: number; img: string; qty: number }[]
+  >([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutDone, setCheckoutDone] = useState(false);
   const cartCount = cartItems.reduce((s, i) => s + i.qty, 0);
@@ -52,7 +54,12 @@ function LuxeHair() {
     timerRef.current = setTimeout(() => setShow(false), 2800);
   };
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
+  );
 
   const PRODUCT_META: Record<string, { price: number; img: string }> = {
     "TRESemmé Keratin Smooth Shampoo": { price: 449, img: "/images/p1.png" },
@@ -66,13 +73,20 @@ function LuxeHair() {
     const meta = PRODUCT_META[name] || { price: 399, img: "/images/p1.png" };
     setCartItems((prev) => {
       const existing = prev.find((i) => i.name === name);
-      if (existing) return prev.map((i) => i.name === name ? { ...i, qty: i.qty + 1 } : i);
-      const id = (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : String(Date.now() + Math.random());
+      if (existing) return prev.map((i) => (i.name === name ? { ...i, qty: i.qty + 1 } : i));
+      const id =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : String(Date.now() + Math.random());
       return [...prev, { id, name, price: meta.price, img: meta.img, qty: 1 }];
     });
     setCartOpen(true);
     showToast(`${name} added to cart!`);
-    try { await addToCart({ data: { item: name } }); } catch (err) { console.warn("Cart backend error:", err); }
+    try {
+      await addToCart({ data: { item: name } });
+    } catch (err) {
+      console.warn("Cart backend error:", err);
+    }
   };
 
   const handleRemove = (id: string) => {
@@ -81,11 +95,13 @@ function LuxeHair() {
   };
 
   const handleQty = (id: string, delta: number) => {
-    setCartItems((prev) => prev.flatMap((i) => {
-      if (i.id !== id) return [i];
-      const nq = i.qty + delta;
-      return nq <= 0 ? [] : [{ ...i, qty: nq }];
-    }));
+    setCartItems((prev) =>
+      prev.flatMap((i) => {
+        if (i.id !== id) return [i];
+        const nq = i.qty + delta;
+        return nq <= 0 ? [] : [{ ...i, qty: nq }];
+      }),
+    );
   };
 
   const handleCheckout = () => {
@@ -160,15 +176,76 @@ function LuxeHair() {
   return (
     <>
       <nav className="navbar">
-        <a className="nav-logo" href="#" onClick={(e) => { e.preventDefault(); goTo("#hero"); }}>LuxeHair</a>
+        <a
+          className="nav-logo"
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            goTo("#hero");
+          }}
+        >
+          LuxeHair
+        </a>
         <ul className="nav-links">
-          <li><a href="#hero" onClick={(e) => { e.preventDefault(); goTo("#hero"); }}>Home</a></li>
-          <li><a href="#products" onClick={(e) => { e.preventDefault(); goTo("#products"); }}>Products</a></li>
-          <li><a href="#feature" onClick={(e) => { e.preventDefault(); goTo("#feature"); }}>About Us</a></li>
-          <li><a href="#testimonials" onClick={(e) => { e.preventDefault(); goTo("#testimonials"); }}>Reviews</a></li>
-          <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo("#contact"); }}>Contact</a></li>
+          <li>
+            <a
+              href="#hero"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("#hero");
+              }}
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <a
+              href="#products"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("#products");
+              }}
+            >
+              Products
+            </a>
+          </li>
+          <li>
+            <a
+              href="#feature"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("#feature");
+              }}
+            >
+              About Us
+            </a>
+          </li>
+          <li>
+            <a
+              href="#testimonials"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("#testimonials");
+              }}
+            >
+              Reviews
+            </a>
+          </li>
+          <li>
+            <a
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("#contact");
+              }}
+            >
+              Contact
+            </a>
+          </li>
         </ul>
-        <button className="nav-cta" onClick={() => setCartOpen(true)}>SHOP NOW {cartCount > 0 ? `(${cartCount})` : ""}</button>
+        <button className="nav-cta" onClick={() => setCartOpen(true)}>
+          SHOP NOW {cartCount > 0 ? `(${cartCount})` : ""}
+        </button>
       </nav>
 
       <section className="hero" id="hero">
@@ -177,15 +254,31 @@ function LuxeHair() {
         <div className="hero-inner">
           <div className="hero-content">
             <span className="hero-label">Premium Hair Care</span>
-            <h1 className="hero-title">Stronger, Smoother <span>Hair Starts Here</span></h1>
-            <p className="hero-sub">Salon-quality formulas crafted with rare botanicals. Transform your hair from the first wash — guaranteed.</p>
+            <h1 className="hero-title">
+              Stronger, Smoother <span>Hair Starts Here</span>
+            </h1>
+            <p className="hero-sub">
+              Salon-quality formulas crafted with rare botanicals. Transform your hair from the
+              first wash — guaranteed.
+            </p>
             <div className="hero-btns">
-              <button className="btn-gold" onClick={() => handleAdd("TRESemmé Keratin Smooth Shampoo")}>Buy Now</button>
-              <button className="btn-outline" onClick={() => goTo("#feature")}>Explore Range</button>
+              <button
+                className="btn-gold"
+                onClick={() => handleAdd("TRESemmé Keratin Smooth Shampoo")}
+              >
+                Buy Now
+              </button>
+              <button className="btn-outline" onClick={() => goTo("#feature")}>
+                Explore Range
+              </button>
             </div>
           </div>
           <div className="hero-bottle">
-            <img src="/images/g1.png" alt="TRESemmé Keratin Smooth Shampoo" onClick={() => handleAdd("TRESemmé Keratin Smooth Shampoo")} />
+            <img
+              src="/images/g1.png"
+              alt="TRESemmé Keratin Smooth Shampoo"
+              onClick={() => handleAdd("TRESemmé Keratin Smooth Shampoo")}
+            />
           </div>
         </div>
       </section>
@@ -193,7 +286,9 @@ function LuxeHair() {
       <section className="strip" id="strip">
         {minis.map((m) => (
           <div className="mini-card" key={m.name} onClick={() => goTo("#products")}>
-            <div className="mini-card-img"><img src={m.img} alt={m.name} /></div>
+            <div className="mini-card-img">
+              <img src={m.img} alt={m.name} />
+            </div>
             <div className="mini-card-body">
               <div className="mini-name">{m.name}</div>
               <div className="mini-price">{m.price}</div>
@@ -219,7 +314,10 @@ function LuxeHair() {
         <div className="feat-text-box">
           <span className="feat-label">Limited Collection</span>
           <h2 className="feat-title">Advanced Repair for All Hair Types</h2>
-          <p className="feat-body">Our clinically tested TRESemmé formula penetrates deep into the hair shaft, restoring moisture balance and eliminating frizz — no matter your hair type.</p>
+          <p className="feat-body">
+            Our clinically tested TRESemmé formula penetrates deep into the hair shaft, restoring
+            moisture balance and eliminating frizz — no matter your hair type.
+          </p>
           <div className="feat-tags">
             <span className="feat-tag">Sulphate Free</span>
             <span className="feat-tag">Clinically Tested</span>
@@ -227,8 +325,12 @@ function LuxeHair() {
             <span className="feat-tag">Pro Formula</span>
           </div>
           <div className="feat-actions">
-            <button className="btn-gold" onClick={() => handleAdd("TRESemmé Keratin Smooth")}>Buy Now</button>
-            <button className="btn-outline" onClick={() => goTo("#products")}>See All Products</button>
+            <button className="btn-gold" onClick={() => handleAdd("TRESemmé Keratin Smooth")}>
+              Buy Now
+            </button>
+            <button className="btn-outline" onClick={() => goTo("#products")}>
+              See All Products
+            </button>
           </div>
         </div>
       </section>
@@ -247,7 +349,9 @@ function LuxeHair() {
                 <div className="prod-card-desc">{p.desc}</div>
                 <div className="prod-card-price">{p.price}</div>
                 <div className="prod-btns">
-                  <button className="btn-cart" onClick={() => handleAdd(p.name)}>ADD TO CART</button>
+                  <button className="btn-cart" onClick={() => handleAdd(p.name)}>
+                    ADD TO CART
+                  </button>
                   <button className="btn-xplore">EXPLORE</button>
                 </div>
               </div>
@@ -262,19 +366,28 @@ function LuxeHair() {
         <div className="testi-grid">
           <div className="testi-card">
             <div className="testi-stars">★★★★★</div>
-            <p className="testi-text">"The TRESemmé Keratin Smooth is life-changing! My frizzy hair is now completely tamed. I use it every wash and results are incredible."</p>
+            <p className="testi-text">
+              "The TRESemmé Keratin Smooth is life-changing! My frizzy hair is now completely tamed.
+              I use it every wash and results are incredible."
+            </p>
             <div className="testi-author">Priya Sharma</div>
             <div className="testi-role">Mumbai, India</div>
           </div>
           <div className="testi-card">
             <div className="testi-stars">★★★★★</div>
-            <p className="testi-text">"Hair Fall Defence shampoo really works! Noticeable difference in 3 weeks. My hair feels thicker and I see way less hair in the drain."</p>
+            <p className="testi-text">
+              "Hair Fall Defence shampoo really works! Noticeable difference in 3 weeks. My hair
+              feels thicker and I see way less hair in the drain."
+            </p>
             <div className="testi-author">Kavya Reddy</div>
             <div className="testi-role">Hyderabad, India</div>
           </div>
           <div className="testi-card">
             <div className="testi-stars">★★★★★</div>
-            <p className="testi-text">"Botanique Nourish smells divine and leaves hair silky. Bought the gift set for my sister and she's obsessed with TRESemmé now!"</p>
+            <p className="testi-text">
+              "Botanique Nourish smells divine and leaves hair silky. Bought the gift set for my
+              sister and she's obsessed with TRESemmé now!"
+            </p>
             <div className="testi-author">Arjun Mehta</div>
             <div className="testi-role">Delhi, India</div>
           </div>
@@ -286,16 +399,42 @@ function LuxeHair() {
           <div className="contact-text">
             <span className="section-label">Need help?</span>
             <h2 className="section-title">Contact our LuxeHair support team</h2>
-            <p className="feat-body">Send us your hair concerns, product questions, or order inquiries. We'll respond with styling tips and the best product match.</p>
+            <p className="feat-body">
+              Send us your hair concerns, product questions, or order inquiries. We'll respond with
+              styling tips and the best product match.
+            </p>
           </div>
           <form className="contact-form" id="contact-form" onSubmit={handleContact}>
             <label htmlFor="contact-name">Name</label>
-            <input className="contact-input" id="contact-name" name="name" type="text" placeholder="Your name" required />
+            <input
+              className="contact-input"
+              id="contact-name"
+              name="name"
+              type="text"
+              placeholder="Your name"
+              required
+            />
             <label htmlFor="contact-email">Email</label>
-            <input className="contact-input" id="contact-email" name="email" type="email" placeholder="Your email" required />
+            <input
+              className="contact-input"
+              id="contact-email"
+              name="email"
+              type="email"
+              placeholder="Your email"
+              required
+            />
             <label htmlFor="contact-message">Message</label>
-            <textarea className="contact-textarea" id="contact-message" name="message" rows={5} placeholder="Tell us what you're looking for" required></textarea>
-            <button className="contact-submit" type="submit">Send Message</button>
+            <textarea
+              className="contact-textarea"
+              id="contact-message"
+              name="message"
+              rows={5}
+              placeholder="Tell us what you're looking for"
+              required
+            ></textarea>
+            <button className="contact-submit" type="submit">
+              Send Message
+            </button>
           </form>
         </div>
       </section>
@@ -304,37 +443,196 @@ function LuxeHair() {
         <div className="footer-top">
           <div className="footer-col">
             <span className="footer-brand-name">LuxeHair</span>
-            <p className="footer-brand-desc">Premium TRESemmé hair care — formulated with rare botanicals and cutting-edge science for hair that turns heads everywhere.</p>
-            <button className="btn-gold" onClick={() => goTo("#products")} style={{ fontSize: 14, padding: "11px 26px" }}>Shop Now</button>
+            <p className="footer-brand-desc">
+              Premium TRESemmé hair care — formulated with rare botanicals and cutting-edge science
+              for hair that turns heads everywhere.
+            </p>
+            <button
+              className="btn-gold"
+              onClick={() => goTo("#products")}
+              style={{ fontSize: 14, padding: "11px 26px" }}
+            >
+              Shop Now
+            </button>
           </div>
           <div className="footer-col">
             <span className="footer-col-head">Shop</span>
             <ul>
-              <li><a href="#products" onClick={(e) => { e.preventDefault(); goTo("#products"); }}>All Products</a></li>
-              <li><a href="#products" onClick={(e) => { e.preventDefault(); goTo("#products"); }}>Shampoos</a></li>
-              <li><a href="#products" onClick={(e) => { e.preventDefault(); goTo("#products"); }}>Conditioners</a></li>
-              <li><a href="#products" onClick={(e) => { e.preventDefault(); goTo("#products"); }}>Treatments</a></li>
-              <li><a href="#products" onClick={(e) => { e.preventDefault(); goTo("#products"); }}>Gift Sets</a></li>
+              <li>
+                <a
+                  href="#products"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#products");
+                  }}
+                >
+                  All Products
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#products"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#products");
+                  }}
+                >
+                  Shampoos
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#products"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#products");
+                  }}
+                >
+                  Conditioners
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#products"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#products");
+                  }}
+                >
+                  Treatments
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#products"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#products");
+                  }}
+                >
+                  Gift Sets
+                </a>
+              </li>
             </ul>
           </div>
           <div className="footer-col">
             <span className="footer-col-head">Help</span>
             <ul>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo("#contact"); }}>Hair Quiz</a></li>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo("#contact"); }}>Shipping Info</a></li>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo("#contact"); }}>Returns</a></li>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo("#contact"); }}>Track Order</a></li>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo("#contact"); }}>Contact</a></li>
+              <li>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#contact");
+                  }}
+                >
+                  Hair Quiz
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#contact");
+                  }}
+                >
+                  Shipping Info
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#contact");
+                  }}
+                >
+                  Returns
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#contact");
+                  }}
+                >
+                  Track Order
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#contact");
+                  }}
+                >
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
           <div className="footer-col">
             <span className="footer-col-head">Company</span>
             <ul>
-              <li><a href="#feature" onClick={(e) => { e.preventDefault(); goTo("#feature"); }}>About Us</a></li>
-              <li><a href="#feature" onClick={(e) => { e.preventDefault(); goTo("#feature"); }}>Blog</a></li>
-              <li><a href="#feature" onClick={(e) => { e.preventDefault(); goTo("#feature"); }}>Careers</a></li>
-              <li><a href="#feature" onClick={(e) => { e.preventDefault(); goTo("#feature"); }}>Press</a></li>
-              <li><a href="#feature" onClick={(e) => { e.preventDefault(); goTo("#feature"); }}>Sustainability</a></li>
+              <li>
+                <a
+                  href="#feature"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#feature");
+                  }}
+                >
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#feature"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#feature");
+                  }}
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#feature"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#feature");
+                  }}
+                >
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#feature"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#feature");
+                  }}
+                >
+                  Press
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#feature"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("#feature");
+                  }}
+                >
+                  Sustainability
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -353,9 +651,13 @@ function LuxeHair() {
             <div className="cart-head">
               <div>
                 <h3>Shopping Bag</h3>
-                <span className="cart-sub">{cartCount} item{cartCount !== 1 ? "s" : ""}</span>
+                <span className="cart-sub">
+                  {cartCount} item{cartCount !== 1 ? "s" : ""}
+                </span>
               </div>
-              <button className="cart-close" onClick={() => setCartOpen(false)}>✕</button>
+              <button className="cart-close" onClick={() => setCartOpen(false)}>
+                ✕
+              </button>
             </div>
 
             {checkoutDone ? (
@@ -363,7 +665,15 @@ function LuxeHair() {
                 <div className="cart-success-icon">✓</div>
                 <h4>Order Placed!</h4>
                 <p>Thank you for shopping with LuxeHair. We'll email your receipt shortly.</p>
-                <button className="btn-gold" onClick={() => { setCheckoutDone(false); setCartOpen(false); }}>Done</button>
+                <button
+                  className="btn-gold"
+                  onClick={() => {
+                    setCheckoutDone(false);
+                    setCartOpen(false);
+                  }}
+                >
+                  Done
+                </button>
               </div>
             ) : (
               <>
@@ -373,12 +683,22 @@ function LuxeHair() {
                       <div className="cart-empty-icon">🛍️</div>
                       <p className="cart-empty">Your bag is empty</p>
                       <span className="cart-empty-sub">Add some luxe to your routine</span>
-                      <button className="btn-gold" onClick={() => { setCartOpen(false); goTo("#products"); }}>Shop Products</button>
+                      <button
+                        className="btn-gold"
+                        onClick={() => {
+                          setCartOpen(false);
+                          goTo("#products");
+                        }}
+                      >
+                        Shop Products
+                      </button>
                     </div>
                   ) : (
                     cartItems.map((it) => (
                       <div className="cart-item" key={it.id}>
-                        <div className="cart-item-img"><img src={it.img} alt={it.name} /></div>
+                        <div className="cart-item-img">
+                          <img src={it.img} alt={it.name} />
+                        </div>
                         <div className="cart-item-info">
                           <div className="cart-item-name">{it.name}</div>
                           <div className="cart-item-price">₹ {it.price}</div>
@@ -388,7 +708,9 @@ function LuxeHair() {
                               <span>{it.qty}</span>
                               <button onClick={() => handleQty(it.id, 1)}>+</button>
                             </div>
-                            <button className="cart-item-del" onClick={() => handleRemove(it.id)}>Delete</button>
+                            <button className="cart-item-del" onClick={() => handleRemove(it.id)}>
+                              Delete
+                            </button>
                           </div>
                         </div>
                         <div className="cart-item-line">₹ {it.price * it.qty}</div>
@@ -399,13 +721,37 @@ function LuxeHair() {
 
                 {cartItems.length > 0 && (
                   <div className="cart-foot">
-                    <div className="cart-row"><span>Subtotal</span><span>₹ {subtotal}</span></div>
-                    <div className="cart-row"><span>Shipping</span><span>{shipping === 0 ? "FREE" : `₹ ${shipping}`}</span></div>
-                    <div className="cart-row"><span>Tax (5%)</span><span>₹ {tax}</span></div>
-                    <div className="cart-row cart-total"><span>Total</span><span>₹ {grandTotal}</span></div>
-                    {subtotal < 999 && <div className="cart-hint">Add ₹ {999 - subtotal} more for FREE shipping</div>}
-                    <button className="btn-gold cart-checkout" onClick={handleCheckout}>Checkout — ₹ {grandTotal}</button>
-                    <button className="cart-continue" onClick={() => { setCartOpen(false); goTo("#products"); }}>Continue Shopping</button>
+                    <div className="cart-row">
+                      <span>Subtotal</span>
+                      <span>₹ {subtotal}</span>
+                    </div>
+                    <div className="cart-row">
+                      <span>Shipping</span>
+                      <span>{shipping === 0 ? "FREE" : `₹ ${shipping}`}</span>
+                    </div>
+                    <div className="cart-row">
+                      <span>Tax (5%)</span>
+                      <span>₹ {tax}</span>
+                    </div>
+                    <div className="cart-row cart-total">
+                      <span>Total</span>
+                      <span>₹ {grandTotal}</span>
+                    </div>
+                    {subtotal < 999 && (
+                      <div className="cart-hint">Add ₹ {999 - subtotal} more for FREE shipping</div>
+                    )}
+                    <button className="btn-gold cart-checkout" onClick={handleCheckout}>
+                      Checkout — ₹ {grandTotal}
+                    </button>
+                    <button
+                      className="cart-continue"
+                      onClick={() => {
+                        setCartOpen(false);
+                        goTo("#products");
+                      }}
+                    >
+                      Continue Shopping
+                    </button>
                   </div>
                 )}
               </>
@@ -414,7 +760,9 @@ function LuxeHair() {
         </div>
       )}
 
-      <div className={`toast${show ? " show" : ""}`} id="toast">{toast}</div>
+      <div className={`toast${show ? " show" : ""}`} id="toast">
+        {toast}
+      </div>
     </>
   );
 }

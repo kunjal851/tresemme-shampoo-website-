@@ -3,13 +3,9 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const addToCartFn = createServerFn({ method: "POST" })
-  .inputValidator((input) =>
-    z.object({ item: z.string().min(1).max(200) }).parse(input),
-  )
+  .inputValidator((input) => z.object({ item: z.string().min(1).max(200) }).parse(input))
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin
-      .from("cart_items")
-      .insert({ item: data.item });
+    const { error } = await supabaseAdmin.from("cart_items").insert({ item: data.item });
     if (error) {
       console.error("cart insert error", error);
       return { ok: false, message: "Could not add to cart." };
@@ -28,9 +24,7 @@ export const submitContactFn = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin
-      .from("contact_messages")
-      .insert(data);
+    const { error } = await supabaseAdmin.from("contact_messages").insert(data);
     if (error) {
       console.error("contact insert error", error);
       return { ok: false, message: "Could not send. Try again soon." };

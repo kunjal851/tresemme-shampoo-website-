@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { addToCartFn, submitContactFn } from "@/lib/luxehair.functions";
 
@@ -30,8 +29,6 @@ function goTo(selector: string) {
 }
 
 function LuxeHair() {
-  const addToCart = useServerFn(addToCartFn);
-  const submitContact = useServerFn(submitContactFn);
 
   const [toast, setToast] = useState("");
   const [show, setShow] = useState(false);
@@ -83,7 +80,7 @@ function LuxeHair() {
     setCartOpen(true);
     showToast(`${name} added to cart!`);
     try {
-      await addToCart({ data: { item: name } });
+      await addToCartFn({ item: name });
     } catch (err) {
       console.warn("Cart backend error:", err);
     }
@@ -126,7 +123,7 @@ function LuxeHair() {
       return;
     }
     try {
-      const res = await submitContact({ data: payload });
+      const res = await submitContactFn(payload);
       showToast(res.message);
       if (res.ok) form.reset();
     } catch (err) {
